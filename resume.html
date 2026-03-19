@@ -1,0 +1,132 @@
+{% extends 'core/base.html' %}
+{% block title %}Résumé — {{ profile.full_name|default:"Portfolio" }}{% endblock %}
+
+{% block content %}
+
+<div class="page-header text-center">
+  <div class="container">
+    <div class="section-label justify-content-center">Curriculum Vitae</div>
+    <h1 class="section-title mb-2">My Résumé</h1>
+    <p style="color:var(--text-muted);font-family:var(--font-mono);font-size:0.85rem">
+      {{ profile.title|default:"Full Stack Developer" }}
+    </p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container" style="max-width:860px">
+
+    <!-- Download bar -->
+    {% if profile.resume %}
+    <div class="resume-download-bar animate-in">
+      <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted)">
+        <i class="fas fa-file-pdf me-2" style="color:var(--accent)"></i>
+        Resume available for download
+      </div>
+      <a href="{{ profile.resume.url }}" class="btn-gold" download>
+        <i class="fas fa-download fa-sm"></i> Download PDF
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Header card -->
+    <div class="card-dark mb-4 animate-in">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          {% if profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.full_name }}"
+                 style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)">
+          {% else %}
+            <div style="width:80px;height:80px;border-radius:50%;background:var(--bg-2);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--accent)">
+              <i class="fas fa-user"></i>
+            </div>
+          {% endif %}
+        </div>
+        <div class="col">
+          <h2 style="font-family:var(--font-display);font-size:1.8rem;margin:0">{{ profile.full_name|default:"Your Name" }}</h2>
+          <p style="font-family:var(--font-mono);color:var(--accent);font-size:0.85rem;margin:0.25rem 0">{{ profile.title|default:"Developer" }}</p>
+          <div style="font-size:0.82rem;color:var(--text-muted)">
+            {% if profile.email %}<span class="me-3"><i class="fas fa-envelope fa-sm me-1"></i>{{ profile.email }}</span>{% endif %}
+            {% if profile.phone %}<span class="me-3"><i class="fas fa-phone fa-sm me-1"></i>{{ profile.phone }}</span>{% endif %}
+            {% if profile.location %}<span><i class="fas fa-map-marker-alt fa-sm me-1"></i>{{ profile.location }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    {% if profile.bio %}
+    <div class="card-dark mb-4 animate-in">
+      <div class="section-label">Profile Summary</div>
+      <p style="color:var(--text-muted);line-height:1.85;margin:0">{{ profile.bio }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Skills -->
+    {% if skills %}
+    <div class="card-dark mb-4 animate-in">
+      <div class="section-label">Technical Skills</div>
+      {% regroup skills by category as skill_groups %}
+      {% for group in skill_groups %}
+      <div class="mb-3">
+        <div style="font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem">
+          {{ group.grouper }}
+        </div>
+        {% for skill in group.list %}
+          <span class="skill-tag">{{ skill.name }}</span>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Experience -->
+    {% if experiences %}
+    <div class="card-dark mb-4 animate-in">
+      <div class="section-label">Work Experience</div>
+      <div class="timeline mt-3">
+        {% for exp in experiences %}
+        <div class="timeline-item">
+          <div class="timeline-date">
+            {{ exp.start_date|date:"M Y" }} — {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"M Y" }}{% endif %}
+          </div>
+          <div class="timeline-role">{{ exp.role }}</div>
+          <div class="timeline-company">{{ exp.company }}</div>
+          <div class="timeline-desc">{{ exp.description }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Education -->
+    {% if education %}
+    <div class="card-dark mb-4 animate-in">
+      <div class="section-label">Education</div>
+      <div class="timeline mt-3">
+        {% for edu in education %}
+        <div class="timeline-item">
+          <div class="timeline-date">{{ edu.start_year }} — {{ edu.end_year|default:"Present" }}</div>
+          <div class="timeline-role">{{ edu.degree }} in {{ edu.field }}</div>
+          <div class="timeline-company">{{ edu.institution }}</div>
+          {% if edu.description %}<div class="timeline-desc">{{ edu.description }}</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-5 animate-in">
+      <a href="{% url 'contact' %}" class="btn-gold me-3">
+        <i class="fas fa-envelope fa-sm"></i> Hire Me
+      </a>
+      {% if profile.resume %}
+      <a href="{{ profile.resume.url }}" class="btn-outline-gold" download>
+        <i class="fas fa-download fa-sm"></i> Download PDF
+      </a>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

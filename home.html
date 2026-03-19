@@ -1,0 +1,173 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}{{ profile.full_name|default:"Portfolio" }} — Home{% endblock %}
+
+{% block content %}
+
+<!-- ══ HERO ════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="container">
+    <div class="row align-items-center g-5">
+
+      <!-- Text -->
+      <div class="col-lg-7 order-2 order-lg-1">
+        <div class="hero-label">HELLO THERE!!  WELCOME!</div>
+        <h1 class="hero-name">
+          {{ profile.full_name|default:"Your Name"|truncatewords:1 }}<br>
+          <em>{{ profile.full_name|default:"Name"|slice:"profile.full_name.split:1" }}</em>
+        </h1>
+        <div class="hero-title">
+          &gt;&nbsp;<span id="typingTitle"
+            data-titles='["{{ profile.title|default:"Full Stack Developer" }}", "Problem Solver", "Open Source Enthusiast"]'>
+          </span><span style="color:var(--accent);animation:pulse 1s infinite">_</span>
+        </div>
+        <p class="hero-desc">{{ profile.bio|truncatechars:200|default:"I build elegant, performant web applications and love turning complex ideas into clean code." }}</p>
+        <div class="hero-actions">
+          <a href="{% url 'projects' %}" class="btn-gold">
+            <i class="fas fa-code-branch fa-sm"></i> View Projects
+          </a>
+          <a href="{% url 'contact' %}" class="btn-outline-gold">
+            <i class="fas fa-envelope fa-sm"></i> Get in Touch
+          </a>
+          {% if profile.resume %}
+          <a href="{{ profile.resume.url }}" class="btn-outline-gold" download>
+            <i class="fas fa-download fa-sm"></i> Download CV
+          </a>
+          {% endif %}
+        </div>
+
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">{{ featured_projects.count|default:"10" }}+</div>
+            <div class="stat-label">Projects</div>
+          </div>
+          <div>
+            <div class="stat-num">3+</div>
+            <div class="stat-label">Years Exp.</div>
+          </div>
+          <div>
+            <div class="stat-num">{{ skills.count|default:"20" }}+</div>
+            <div class="stat-label">Technologies</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Avatar -->
+      <div class="col-lg-5 order-1 order-lg-2 text-center">
+        <div class="hero-avatar-wrap">
+          <div class="hero-avatar-ring"></div>
+          {% if profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.full_name }}" class="hero-avatar">
+          {% else %}
+            <div class="hero-avatar-placeholder">
+              <i class="fas fa-user"></i>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ SKILLS TEASER ════════════════════════════════ -->
+{% if skills %}
+<section class="section" style="background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="text-center mb-5 animate-in">
+      <div class="section-label justify-content-center">What I work with</div>
+      <h2 class="section-title">Skills & Technologies</h2>
+    </div>
+    <div class="text-center animate-in">
+      {% for skill in skills %}
+        <span class="skill-tag">{{ skill.name }}</span>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4 animate-in">
+      <a href="{% url 'about' %}" class="btn-outline-gold btn-sm">
+        View detailed skills <i class="fas fa-arrow-right fa-sm ms-1"></i>
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══ FEATURED PROJECTS ══════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="row align-items-end mb-5">
+      <div class="col animate-in">
+        <div class="section-label">Selected work</div>
+        <h2 class="section-title">Featured Projects</h2>
+      </div>
+      <div class="col-auto animate-in">
+        <a href="{% url 'projects' %}" class="btn-outline-gold">
+          All projects <i class="fas fa-arrow-right fa-sm ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      {% for project in featured_projects %}
+      <div class="col-md-6 col-lg-4 animate-in">
+        <div class="project-card h-100">
+          {% if project.thumbnail %}
+            <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="project-thumb">
+          {% else %}
+            <div class="project-thumb-placeholder">
+              <i class="fas fa-laptop-code"></i>
+            </div>
+          {% endif %}
+          <div class="project-body">
+            <h3 class="project-title">{{ project.title }}</h3>
+            <p class="project-desc">{{ project.description|truncatechars:120 }}</p>
+            <div class="project-tech">
+              {% for tech in project.tech_list %}
+                <span class="tech-badge">{{ tech }}</span>
+              {% endfor %}
+            </div>
+            <div class="project-links">
+              {% if project.live_url %}
+              <a href="{{ project.live_url }}" target="_blank" class="project-link">
+                <i class="fas fa-external-link-alt"></i> Live
+              </a>
+              {% endif %}
+              {% if project.github_url %}
+              <a href="{{ project.github_url }}" target="_blank" class="project-link">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center animate-in" style="color:var(--text-muted);padding:4rem 0">
+        <i class="fas fa-laptop-code fa-3x mb-3" style="color:var(--text-dim)"></i>
+        <p>Projects coming soon. Add them via the <a href="/admin/" style="color:var(--accent)">admin panel</a>.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ═══════════════════════════════════════ -->
+<section class="section-sm" style="background:var(--bg-2);border-top:1px solid var(--border)">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 text-center animate-in">
+        <h2 class="section-title mb-3">Let's build something<br><em>remarkable</em> together.</h2>
+        <p style="color:var(--text-muted);margin-bottom:2rem">
+          I'm currently available for freelance work and full-time opportunities.
+        </p>
+        <a href="{% url 'contact' %}" class="btn-gold">
+          <i class="fas fa-rocket fa-sm"></i> Start a conversation
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

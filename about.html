@@ -1,0 +1,145 @@
+{% extends 'core/base.html' %}
+{% block title %}About — {{ profile.full_name|default:"Portfolio" }}{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-num">02</div>
+  <div class="container">
+    <div class="section-label">Get to know me</div>
+    <h1 class="section-title mb-0">About Me</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+
+      <!-- Profile side -->
+      <div class="col-lg-4 animate-in">
+        <div class="card-dark text-center mb-4">
+          {% if profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.full_name }}"
+                 style="width:160px;height:160px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);margin:0 auto 1.5rem">
+          {% else %}
+            <div style="width:160px;height:160px;border-radius:50%;background:var(--bg-2);border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:4rem;color:var(--accent);margin:0 auto 1.5rem">
+              <i class="fas fa-user"></i>
+            </div>
+          {% endif %}
+          <h3 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:0.25rem">{{ profile.full_name|default:"Your Name" }}</h3>
+          <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--accent)">{{ profile.title|default:"Developer" }}</p>
+
+          <hr style="border-color:var(--border);margin:1.25rem 0">
+
+          {% if profile.location %}
+          <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem">
+            <i class="fas fa-map-marker-alt fa-sm me-2" style="color:var(--accent)"></i>{{ profile.location }}
+          </div>
+          {% endif %}
+          {% if profile.email %}
+          <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem">
+            <i class="fas fa-envelope fa-sm me-2" style="color:var(--accent)"></i>{{ profile.email }}
+          </div>
+          {% endif %}
+          {% if profile.phone %}
+          <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem">
+            <i class="fas fa-phone fa-sm me-2" style="color:var(--accent)"></i>{{ profile.phone }}
+          </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-center gap-2 mt-3">
+            {% if profile.github %}<a href="{{ profile.github }}" target="_blank" class="social-link"><i class="fab fa-github"></i></a>{% endif %}
+            {% if profile.linkedin %}<a href="{{ profile.linkedin }}" target="_blank" class="social-link"><i class="fab fa-linkedin-in"></i></a>{% endif %}
+            {% if profile.twitter %}<a href="{{ profile.twitter }}" target="_blank" class="social-link"><i class="fab fa-twitter"></i></a>{% endif %}
+          </div>
+
+          {% if profile.resume %}
+          <a href="{{ profile.resume.url }}" class="btn-gold w-100 mt-3" download>
+            <i class="fas fa-download fa-sm"></i> Download Resume
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Content side -->
+      <div class="col-lg-8">
+
+        <!-- Bio -->
+        <div class="animate-in mb-5">
+          <div class="section-label">Biography</div>
+          <p style="font-size:1.05rem;line-height:1.85;color:var(--text-muted)">
+            {{ profile.bio|default:"Add your bio in the admin panel. Tell the world who you are, what you love building, and what drives you." }}
+          </p>
+        </div>
+
+        <!-- Skills -->
+        {% if skills %}
+        <div class="animate-in mb-5">
+          <div class="section-label">Skills</div>
+          {% regroup skills by category as skill_groups %}
+          {% for group in skill_groups %}
+          <div class="mb-4">
+            <h5 style="font-family:var(--font-mono);font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem">
+              {{ group.grouper }}
+            </h5>
+            {% for skill in group.list %}
+            <div class="skill-bar-wrap">
+              <div class="skill-bar-header">
+                <span>{{ skill.name }}</span>
+                <span style="color:var(--accent)">{{ skill.proficiency }}%</span>
+              </div>
+              <div class="skill-bar-track">
+                <div class="skill-bar-fill" data-width="{{ skill.proficiency }}"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <!-- Experience + Education -->
+    <div class="row g-5 mt-2">
+      <div class="col-lg-6 animate-in">
+        <div class="section-label">Work History</div>
+        <h2 class="section-title" style="font-size:2rem">Experience</h2>
+        <div class="timeline mt-4">
+          {% for exp in experiences %}
+          <div class="timeline-item">
+            <div class="timeline-date">
+              {{ exp.start_date|date:"M Y" }} — {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"M Y" }}{% endif %}
+            </div>
+            <div class="timeline-role">{{ exp.role }}</div>
+            <div class="timeline-company"><i class="fas fa-building fa-sm me-1"></i>{{ exp.company }}</div>
+            <div class="timeline-desc">{{ exp.description }}</div>
+          </div>
+          {% empty %}
+          <p style="color:var(--text-muted);font-size:0.9rem">No experience entries yet. Add them via the admin panel.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="col-lg-6 animate-in">
+        <div class="section-label">Academic Background</div>
+        <h2 class="section-title" style="font-size:2rem">Education</h2>
+        <div class="timeline mt-4">
+          {% for edu in education %}
+          <div class="timeline-item">
+            <div class="timeline-date">{{ edu.start_year }} — {{ edu.end_year|default:"Present" }}</div>
+            <div class="timeline-role">{{ edu.degree }} in {{ edu.field }}</div>
+            <div class="timeline-company"><i class="fas fa-university fa-sm me-1"></i>{{ edu.institution }}</div>
+            {% if edu.description %}<div class="timeline-desc">{{ edu.description }}</div>{% endif %}
+          </div>
+          {% empty %}
+          <p style="color:var(--text-muted);font-size:0.9rem">No education entries yet. Add them via the admin panel.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'core/base.html' %}
+{% block title %}Projects — {{ profile.full_name|default:"Portfolio" }}{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-num">03</div>
+  <div class="container">
+    <div class="section-label">What I've built</div>
+    <h1 class="section-title mb-0">Projects</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Filter tabs -->
+    <div class="d-flex flex-wrap gap-2 mb-5 animate-in" id="filterBtns">
+      <button class="btn-gold filter-btn active" data-filter="all">All</button>
+      <button class="btn-outline-gold filter-btn" data-filter="featured">Featured</button>
+    </div>
+
+    <div class="row g-4" id="projectsGrid">
+      {% for project in projects %}
+      <div class="col-md-6 col-lg-4 animate-in project-item {% if project.featured %}featured{% endif %}"
+           data-featured="{{ project.featured|yesno:'true,false' }}">
+        <div class="project-card h-100">
+          {% if project.featured %}
+          <div style="position:absolute;top:1rem;right:1rem;z-index:1;background:var(--accent);color:var(--bg);font-family:var(--font-mono);font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:4px;letter-spacing:0.05em">
+            ★ FEATURED
+          </div>
+          {% endif %}
+          {% if project.thumbnail %}
+            <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="project-thumb">
+          {% else %}
+            <div class="project-thumb-placeholder">
+              <i class="fas fa-laptop-code"></i>
+            </div>
+          {% endif %}
+          <div class="project-body">
+            <h3 class="project-title">{{ project.title }}</h3>
+            <p class="project-desc">{{ project.description|truncatechars:140 }}</p>
+            <div class="project-tech">
+              {% for tech in project.tech_list %}
+                <span class="tech-badge">{{ tech }}</span>
+              {% endfor %}
+            </div>
+            <div class="project-links">
+              {% if project.live_url %}
+              <a href="{{ project.live_url }}" target="_blank" class="project-link">
+                <i class="fas fa-external-link-alt"></i> Live Demo
+              </a>
+              {% endif %}
+              {% if project.github_url %}
+              <a href="{{ project.github_url }}" target="_blank" class="project-link">
+                <i class="fab fa-github"></i> Source
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center animate-in" style="padding:5rem 0;color:var(--text-muted)">
+        <i class="fas fa-rocket fa-4x mb-4" style="color:var(--text-dim)"></i>
+        <h3 style="font-family:var(--font-display)">Projects Coming Soon</h3>
+        <p>Add your projects through the <a href="/admin/" style="color:var(--accent)">admin panel</a>.</p>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.className = 'btn-outline-gold filter-btn';
+    });
+    btn.className = 'btn-gold filter-btn active';
+
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.project-item').forEach(item => {
+      const show = filter === 'all' || item.dataset.featured === 'true';
+      item.style.display = show ? 'block' : 'none';
+    });
+  });
+});
+</script>
+{% endblock %}
